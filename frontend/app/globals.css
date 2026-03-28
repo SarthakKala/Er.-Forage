@@ -1,25 +1,85 @@
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@400;500&display=swap");
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-base: #050505;
+  --bg-surface: #0f0f0f;
+  --bg-elevated: #161616;
+  --bg-border: rgba(255, 255, 255, 0.06);
+  --bg-border-hover: rgba(255, 255, 255, 0.12);
+  --text-primary: rgba(255, 255, 255, 0.9);
+  --text-secondary: rgba(255, 255, 255, 0.5);
+  --text-muted: rgba(255, 255, 255, 0.2);
+  --green: #3ecf8e;
+  --green-dim: rgba(62, 207, 142, 0.1);
+  --green-border: rgba(62, 207, 142, 0.2);
+  --amber: rgba(251, 191, 36, 0.8);
+  --red: rgba(239, 68, 68, 0.8);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-inter);
+  --font-sans: "Geist", "Inter", -apple-system, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  background: #050505;
+}
+
+html,
+body {
+  min-height: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  background: #050505;
+  color: var(--text-primary);
+  font-family: "Geist", "Inter", -apple-system, sans-serif;
+}
+
+/* Landing + app: custom scrollbar — 6px, dark track, subtle thumb, green hover */
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #050505;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(62, 207, 142, 0.3);
+}
+
+/* (Reserved) smooth scroll wrappers removed for app shell stability */
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.04) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }

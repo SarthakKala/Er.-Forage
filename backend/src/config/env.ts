@@ -5,6 +5,7 @@ dotenv.config();
 function getEnv(name: string): string {
   const value = process.env[name];
   if (!value) {
+    console.warn(`[env] Missing required environment variable: ${name}`);
     throw new Error(`Missing required environment variable: ${name}`);
   }
   return value;
@@ -20,5 +21,6 @@ export const env = {
   SUPABASE_KEY: process.env.SUPABASE_KEY ?? "",
   GOOGLE_CLIENT_ID: getEnv("GOOGLE_CLIENT_ID"),
   GOOGLE_CLIENT_SECRET: getEnv("GOOGLE_CLIENT_SECRET"),
-  JWT_SECRET: getEnv("JWT_SECRET")
+  JWT_SECRET: getEnv("JWT_SECRET"),
+  OPENROUTER_API_KEY: getEnv("OPENROUTER_API_KEY")
 };

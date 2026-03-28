@@ -34,3 +34,8 @@ export async function getUserById(userId: string): Promise<User | null> {
   );
   return result.rows[0] ?? null;
 }
+
+export async function deleteUserById(userId: string): Promise<boolean> {
+  const result = await db.query("DELETE FROM users WHERE id = $1", [userId]);
+  return (result.rowCount ?? 0) > 0;
+}

@@ -39,7 +39,8 @@ connectionsRouter.post("/", async (req, res) => {
 
     return res.status(201).json({ connection: result });
   } catch (e) {
-    return res.status(500).json({ message: "Failed to connect platform", details: e });
+    console.error("connections post failed:", e);
+    return res.status(500).json({ error: "Something went wrong", code: "INTERNAL_ERROR" });
   }
 });
 
@@ -48,7 +49,8 @@ connectionsRouter.get("/", async (req, res) => {
     const connections = await listPlatformConnections(req.user!.id);
     return res.json({ connections });
   } catch (e) {
-    return res.status(500).json({ message: "Failed to list connections", details: e });
+    console.error("connections list failed:", e);
+    return res.status(500).json({ error: "Something went wrong", code: "INTERNAL_ERROR" });
   }
 });
 
@@ -61,7 +63,8 @@ connectionsRouter.delete("/:id", async (req, res) => {
     }
     return res.json({ message: "Disconnected" });
   } catch (e) {
-    return res.status(500).json({ message: "Failed to disconnect platform", details: e });
+    console.error("connections delete failed:", e);
+    return res.status(500).json({ error: "Something went wrong", code: "INTERNAL_ERROR" });
   }
 });
 

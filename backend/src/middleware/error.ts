@@ -6,6 +6,9 @@ export function errorMiddleware(
   res: Response,
   _next: NextFunction
 ) {
-  console.error(err);
-  res.status(500).json({ message: "Internal server error" });
+  console.error("Unhandled error:", err);
+  res.status(500).json({
+    error: "Something went wrong",
+    code: "INTERNAL_ERROR"
+  });
 }

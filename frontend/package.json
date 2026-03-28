@@ -9,9 +9,15 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@gsap/react": "^2.1.2",
     "axios": "^1.13.6",
+    "chart.js": "^4.5.1",
+    "framer-motion": "^12.38.0",
+    "geist": "^1.7.0",
+    "gsap": "^3.14.2",
     "next": "^14.2.35",
     "react": "^18.3.1",
+    "react-chartjs-2": "^5.3.1",
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
@@ -21,6 +27,8 @@
     "@types/react-dom": "^19",
     "eslint": "^8.57.1",
     "eslint-config-next": "^14.2.33",
+    "png-to-ico": "^3.0.1",
+    "pngjs": "^7.0.0",
     "prettier": "^3.8.1",
     "tailwindcss": "^4",
     "typescript": "^5"

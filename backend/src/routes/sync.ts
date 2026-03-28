@@ -1,15 +1,26 @@
 import { Router } from "express";
+import rateLimit from "express-rate-limit";
 import { decryptString } from "../lib/tokenEncryption";
 import { setUserSyncState, getUserSyncState } from "../lib/syncStatus";
 import { fetchLeetCodeSubmissionHistory } from "../adapters/leetcode";
 import {
   getPlatformConnectionByPlatform
 } from "../models/platformConnections";
+import { autoCompletePendingAssignmentsByProblemIds } from "../models/assignments";
 import { insertSubmissions } from "../models/submissions";
+import { runSubmissionAnalysisForUser } from "../services/analysis";
+import { maybeGenerateWeeklyAssignments } from "../services/assignment";
 
 export const syncRouter = Router();
 
-syncRouter.post("/", async (req, res) => {
+const syncLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000,
+  max: 1,
+  message: { error: "Please wait 5 minutes between syncs" },
+  keyGenerator: (req) => req.user!.id
+});
+
+syncRouter.post("/", syncLimiter, async (req, res) => {
   const userId = req.user!.id;
   setUserSyncState({
     userId,
@@ -70,10 +81,22 @@ syncRouter.post("/", async (req, res) => {
       });
     }
 
-    const { insertedCount, totalAttempted } = await insertSubmissions({
+    const { insertedCount, totalAttempted, insertedForSync } = await insertSubmissions({
       userId,
       submissions: historyResult.data
     });
+
+    const analysisResult = await runSubmissionAnalysisForUser(userId);
+
+    const newlyAcceptedProblemIds = insertedForSync
+      .filter((row) => row.result === "accepted")
+      .map((row) => row.problem_id);
+    await autoCompletePendingAssignmentsByProblemIds({
+      userId,
+      acceptedProblemIds: newlyAcceptedProblemIds
+    });
+
+    const assignmentResult = await maybeGenerateWeeklyAssignments(userId);
 
     const nowIso = new Date().toISOString();
     setUserSyncState({
@@ -87,17 +110,22 @@ syncRouter.post("/", async (req, res) => {
       status: "complete",
       insertedCount,
       totalAttempted,
+      analysedCount: analysisResult.analysedCount,
+      analysisFailedCount: analysisResult.failedCount,
+      analysisLastError: analysisResult.lastError,
+      assignmentsCreated: assignmentResult.created,
       lastSyncedAt: nowIso
     });
   } catch (e) {
     const message = e instanceof Error ? e.message : "Unknown sync error";
+    console.error("sync failed:", e);
     setUserSyncState({
       userId,
       status: "failed",
       lastSyncedAt: null,
       errorMessage: message
     });
-    return res.status(500).json({ message: "Sync failed", error: message });
+    return res.status(500).json({ error: "Something went wrong", code: "INTERNAL_ERROR" });
   }
 });
 
