@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Er. Forge">
+  <rect width="32" height="32" rx="7" fill="#050505" />
+  <!-- White “E” -->
+  <path
+    fill="#ffffff"
+    d="M8 7L21 7 21 9.35 10.45 9.35 10.45 14.35 20 14.35 20 16.7 10.45 16.7 10.45 20.65 21 20.65 21 23 8 23 8 7z"
+  />
+  <!-- Green period after E -->
+  <circle cx="23.35" cy="21.5" r="2.2" fill="#3ECF8E" />
+</svg>

@@ -10,7 +10,7 @@ const rows: [string, string][] = [
 
 export default function DifferentiatorsSection() {
   return (
-    <section className="bg-[#050505] py-24">
+    <section className="bg-transparent py-24">
       <div className="mx-auto w-full max-w-[1120px] px-6 text-center sm:px-10 lg:px-12">
         <p className="text-[11px] uppercase tracking-[0.08em] text-[#3ECF8E]">Why Er. Forge</p>
         <h2 className="mx-auto mt-3 max-w-3xl text-[32px] font-medium tracking-[-1px] text-white/90 md:text-[40px]">
@@ -23,10 +23,7 @@ export default function DifferentiatorsSection() {
           Er. Forge ensures you stop creating the same ones.
         </p>
 
-        <div
-          className="mt-10 overflow-hidden rounded-[12px] text-center"
-          style={{ border: "0.5px solid rgba(255,255,255,0.06)", background: "#0f0f0f" }}
-        >
+        <div className="glass-panel mt-10 overflow-hidden rounded-[14px] text-center shadow-[0_20px_56px_rgba(0,0,0,0.45)]">
           <div
             className="grid grid-cols-2 gap-0 border-b"
             style={{ borderColor: "rgba(255,255,255,0.06)" }}
@@ -60,13 +57,7 @@ export default function DifferentiatorsSection() {
           ))}
         </div>
 
-        <div
-          className="mt-8 rounded-[12px] px-6 py-5 text-center"
-          style={{
-            background: "rgba(62,207,142,0.05)",
-            border: "0.5px solid rgba(62,207,142,0.15)"
-          }}
-        >
+        <div className="glass-panel-accent mt-8 rounded-[14px] px-6 py-5 text-center">
           <p className="text-[14px] leading-relaxed text-white/70">
             Backed by a 2026 Anthropic study showing that developers who had AI solve their problems directly scored
             significantly lower on follow-up assessments than those who worked through errors themselves.

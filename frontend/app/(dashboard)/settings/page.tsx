@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { api } from "@/lib/axios";
+import { clearSessionToken } from "@/lib/auth-storage";
 import { ErrorState, LoadingCards } from "@/components/ui/States";
 import type { User } from "@/lib/types";
 
@@ -59,13 +60,13 @@ export default function SettingsPage() {
   }
 
   async function signOut() {
-    localStorage.removeItem("erforge_jwt");
+    clearSessionToken();
     router.replace("/login");
   }
 
   async function deleteAccount() {
     await api.delete("/auth/me");
-    localStorage.removeItem("erforge_jwt");
+    clearSessionToken();
     router.replace("/login");
   }
 

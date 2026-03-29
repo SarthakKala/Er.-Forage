@@ -3,37 +3,38 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ComponentType, type ReactNode } from "react";
 import { api } from "@/lib/axios";
 import type { User } from "@/lib/types";
+import { AUTH_LS_KEY } from "@/lib/auth-storage";
 import { formatRelativeTime } from "@/lib/utils";
+import {
+  IconAssignments,
+  IconDashboard,
+  IconPortfolio,
+  IconSettings,
+  IconSkills,
+  IconSubmissions
+} from "@/components/icons/NavIcons";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 
-const nav = [
-  {
-    title: "WORKSPACE",
-    items: [
-      { href: "/dashboard", label: "Dashboard" },
-      { href: "/submissions", label: "Submissions" },
-      { href: "/skills", label: "Skills" }
-    ]
-  },
-  {
-    title: "GROWTH",
-    items: [
-      { href: "/assignments", label: "Assignments" },
-      { href: "/portfolio", label: "Portfolio" },
-      { href: "/portfolio", label: "Reports" }
-    ]
-  },
-  {
-    title: "ACCOUNT",
-    items: [{ href: "/settings", label: "Settings" }]
-  }
+const SIDEBAR_W = 72;
+
+const navItems: Array<{
+  href: string;
+  label: string;
+  Icon: ComponentType<{ className?: string }>;
+}> = [
+  { href: "/dashboard", label: "Dashboard", Icon: IconDashboard },
+  { href: "/submissions", label: "Submissions", Icon: IconSubmissions },
+  { href: "/skills", label: "Skills", Icon: IconSkills },
+  { href: "/assignments", label: "Assignments", Icon: IconAssignments },
+  { href: "/portfolio", label: "Portfolio", Icon: IconPortfolio },
+  { href: "/settings", label: "Settings", Icon: IconSettings }
 ];
 
-export function Shell({ children }: { children: React.ReactNode }) {
+export function Shell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
@@ -44,7 +45,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
   const prevSyncing = useRef(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("erforge_jwt");
+    const token = localStorage.getItem(AUTH_LS_KEY);
     if (!token) {
       router.replace("/login");
       return;
@@ -120,68 +121,6 @@ export function Shell({ children }: { children: React.ReactNode }) {
     }
   }, [syncing]);
 
-  useGSAP(() => {
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReduced) return;
-    const items = Array.from(document.querySelectorAll<HTMLElement>(".nav-item"));
-    const listeners: Array<{
-      el: HTMLElement;
-      enter: (e: Event) => void;
-      leave: (e: Event) => void;
-    }> = [];
-
-    items.forEach((item) => {
-      const border = item.querySelector<HTMLElement>(".nav-left-border");
-      const active = item.dataset.active === "true";
-      if (!border) return;
-
-      if (active) {
-        border.style.width = "4px";
-        border.style.opacity = "1";
-      } else {
-        border.style.width = "0px";
-        border.style.opacity = "0";
-      }
-
-      const enter = () => {
-        gsap.to(border, { width: "4px", opacity: 1, duration: 0.2, ease: "power2.out" });
-        gsap.to(item, { paddingLeft: 20, duration: 0.2, ease: "power2.out" });
-      };
-      const leave = () => {
-        if (active) {
-          gsap.to(border, { width: "4px", opacity: 1, duration: 0.2, ease: "power2.out" });
-        } else {
-          gsap.to(border, { width: "0px", opacity: 0, duration: 0.2, ease: "power2.out" });
-        }
-        gsap.to(item, { paddingLeft: 16, duration: 0.2, ease: "power2.out" });
-      };
-
-      item.addEventListener("mouseenter", enter);
-      item.addEventListener("mouseleave", leave);
-      listeners.push({ el: item, enter, leave });
-    });
-
-    return () => {
-      listeners.forEach(({ el, enter, leave }) => {
-        el.removeEventListener("mouseenter", enter);
-        el.removeEventListener("mouseleave", leave);
-      });
-      gsap.killTweensOf(".nav-left-border");
-      gsap.killTweensOf(".nav-item");
-    };
-  }, [pathname]);
-
-  async function runSync() {
-    setSyncing(true);
-    try {
-      const r = await api.post<{ lastSyncedAt: string }>("/sync");
-      setLastSync(r.data.lastSyncedAt);
-      pushToast("success", "Sync complete.");
-    } finally {
-      setSyncing(false);
-    }
-  }
-
   async function runSyncWithErrors() {
     setSyncing(true);
     try {
@@ -200,13 +139,27 @@ export function Shell({ children }: { children: React.ReactNode }) {
   }, [lastSync]);
 
   return (
-    <div className="min-h-screen bg-[#050505] text-[rgba(255,255,255,0.9)]">
+    <div className="relative min-h-screen bg-[#050505] text-[rgba(255,255,255,0.9)]">
+      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden>
+        <div
+          className="absolute -left-24 top-[-80px] h-[min(480px,55vh)] w-[min(480px,55vh)] rounded-full opacity-90"
+          style={{
+            background: "radial-gradient(circle, rgba(62,207,142,0.09) 0%, transparent 68%)"
+          }}
+        />
+        <div
+          className="absolute bottom-[-100px] right-[-60px] h-[min(420px,50vh)] w-[min(420px,50vh)] rounded-full opacity-80"
+          style={{
+            background: "radial-gradient(circle, rgba(62,207,142,0.05) 0%, transparent 70%)"
+          }}
+        />
+      </div>
       <header
         className="fixed left-0 right-0 top-0 z-50 flex h-12 items-center justify-between px-5"
         style={{
-          background: "rgba(5,5,5,0.9)",
-          borderBottom: "0.5px solid var(--bg-border)",
-          backdropFilter: "blur(12px)"
+          background: "rgba(5,5,5,0.88)",
+          borderBottom: "1px solid rgba(62,207,142,0.12)",
+          backdropFilter: "blur(14px)"
         }}
       >
         <div className="flex items-center gap-3">
@@ -230,9 +183,10 @@ export function Shell({ children }: { children: React.ReactNode }) {
             {syncLabel}
           </span>
           <button
+            type="button"
             onClick={runSyncWithErrors}
             disabled={syncing}
-            className="sync-btn rounded-[8px] px-3 py-1.5 text-[13px]"
+            className="sync-btn rounded-[8px] px-3 py-1.5 text-[13px] disabled:opacity-50"
             style={{
               border: "0.5px solid var(--bg-border)",
               color: "var(--text-secondary)",
@@ -277,72 +231,81 @@ export function Shell({ children }: { children: React.ReactNode }) {
       </header>
 
       <aside
-        className="fixed bottom-0 left-0 top-12 w-[220px] overflow-y-auto px-3 py-4"
+        className="fixed bottom-0 left-0 top-12 z-40 flex shrink-0 flex-col overflow-y-auto border-r border-white/[0.06] py-3"
         style={{
-          borderRight: "0.5px solid var(--bg-border)",
-          background: "var(--bg-base)"
+          width: SIDEBAR_W,
+          background: "rgba(5,5,5,0.72)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)"
         }}
       >
-        <div
-          className="mx-1 mb-4 rounded-[12px] px-3 py-3"
-          style={{ background: "var(--bg-surface)", border: "0.5px solid var(--bg-border)" }}
-        >
-          <p className="text-[11px] uppercase tracking-[0.08em]" style={{ color: "var(--text-muted)" }}>
-            Workspace
-          </p>
-          <p className="mt-1 truncate text-[13px]" style={{ color: "var(--text-secondary)" }}>
-            {user?.name ?? "—"}
-          </p>
-        </div>
-        {nav.map((section) => (
-          <div key={section.title} className="mb-5">
-            <div className="px-3 pb-2 text-[10px] tracking-[0.08em] uppercase" style={{ color: "var(--text-muted)" }}>
-              {section.title}
-            </div>
-            {section.items.map((item) => {
-              const active = pathname === item.href;
-              return (
-                <Link
-                  key={`${section.title}-${item.href}-${item.label}`}
-                  href={item.href}
-                  className="nav-item mx-1 mb-1 flex items-center gap-2 rounded-[6px] py-2 text-[13px]"
-                  data-active={active ? "true" : "false"}
+        <nav className="flex flex-1 flex-col gap-1 px-2" aria-label="Main">
+          {navItems.map((item) => {
+            const NavIcon = item.Icon;
+            const highlighted =
+              item.href === "/dashboard"
+                ? pathname === "/dashboard"
+                : pathname === item.href || pathname.startsWith(item.href + "/");
+
+            return (
+              <Link
+                key={item.href + item.label}
+                href={item.href}
+                title={item.label}
+                aria-current={highlighted ? "page" : undefined}
+                className="group relative flex h-11 items-center justify-center rounded-xl transition-colors hover:bg-white/[0.06]"
+                style={{
+                  color: highlighted ? "var(--green)" : "rgba(255,255,255,0.38)",
+                  background: highlighted ? "rgba(62,207,142,0.1)" : "transparent",
+                  boxShadow: highlighted ? "inset 0 0 0 1px rgba(62,207,142,0.2)" : undefined
+                }}
+              >
+                {highlighted ? (
+                  <span
+                    className="absolute left-0 top-1/2 h-[52%] w-[3px] -translate-y-1/2 rounded-r-full"
+                    style={{ background: "var(--green)" }}
+                  />
+                ) : null}
+                <NavIcon className="relative z-[1]" />
+                <span
+                  className="pointer-events-none absolute left-[calc(100%+10px)] top-1/2 z-[200] hidden -translate-y-1/2 whitespace-nowrap rounded-lg border px-2.5 py-1 text-[11px] font-medium opacity-0 shadow-lg transition duration-150 group-hover:opacity-100 md:block"
                   style={{
-                    color: active ? "var(--green)" : "rgba(255,255,255,0.4)",
-                    background: active ? "rgba(62,207,142,0.08)" : "transparent",
-                    position: "relative",
-                    paddingLeft: 16,
-                    paddingRight: 16
+                    borderColor: "rgba(255,255,255,0.1)",
+                    background: "rgba(12,12,12,0.95)",
+                    color: "rgba(255,255,255,0.92)",
+                    backdropFilter: "blur(8px)"
                   }}
                 >
-                  <span
-                    className="nav-left-border"
-                    style={{
-                      position: "absolute",
-                      left: 0,
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                      height: "60%",
-                      width: active ? "4px" : "0px",
-                      opacity: active ? 1 : 0,
-                      borderRadius: 999,
-                      background: "var(--green)"
-                    }}
-                  />
-                  <span
-                    className="h-1 w-1 rounded-full"
-                    style={{ background: active ? "var(--green)" : "rgba(255,255,255,0.3)" }}
-                  />
-                  <span style={{ position: "relative" }}>{item.label}</span>
-                </Link>
-              );
-            })}
-          </div>
-        ))}
+                  {item.label}
+                </span>
+              </Link>
+            );
+          })}
+        </nav>
+        <div className="mt-auto border-t border-white/[0.06] px-2 pb-2 pt-3">
+          <Link
+            href="/settings"
+            title={user?.name ? `${user.name} — Settings` : "Settings"}
+            className="mx-auto flex h-9 w-9 items-center justify-center overflow-hidden rounded-full text-[11px] font-medium transition-opacity hover:opacity-90"
+            style={{ border: "1px solid var(--bg-border)", background: "var(--bg-surface)", color: "var(--text-secondary)" }}
+          >
+            {user?.avatar_url ? (
+              <Image
+                src={user.avatar_url}
+                alt={user?.name ?? "Account"}
+                width={36}
+                height={36}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              (user?.name?.[0] ?? "·").toUpperCase()
+            )}
+          </Link>
+        </div>
       </aside>
 
-      <main className="ml-[220px] px-8 pb-8 pt-[80px]">
-        <div className="mx-auto max-w-[1100px]">{children}</div>
+      <main className="relative z-10 pb-10 pl-[calc(72px+1.25rem)] pr-5 pt-[72px] sm:pl-[calc(72px+2rem)] sm:pr-8">
+        <div className="mx-auto max-w-[1280px]">{children}</div>
       </main>
 
       <div className="fixed bottom-5 right-5 z-[100] space-y-2">

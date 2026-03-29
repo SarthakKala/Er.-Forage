@@ -33,9 +33,10 @@ export default function HeroSequence() {
     offset: ["start start", "end end"]
   });
 
+  /** Spring-smoothed progress for text/UI only — canvas uses raw scroll so frames stay locked to scroll position */
   const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
+    stiffness: 140,
+    damping: 38,
     restDelta: 0.001
   });
 
@@ -118,12 +119,15 @@ export default function HeroSequence() {
 
   useEffect(() => {
     if (!loaded) return;
-    currentFrameRef.current = 0;
+    const latest = scrollYProgress.get();
+    const rawIndex = Math.floor(latest * (FRAME_COUNT - 1));
+    const index = Math.min(Math.max(rawIndex, 0), FRAME_COUNT - 1);
+    currentFrameRef.current = index;
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    rafRef.current = requestAnimationFrame(() => drawFrame(0));
-  }, [loaded, drawFrame]);
+    rafRef.current = requestAnimationFrame(() => drawFrame(index));
+  }, [loaded, drawFrame, scrollYProgress]);
 
-  useMotionValueEvent(smoothProgress, "change", (latest) => {
+  useMotionValueEvent(scrollYProgress, "change", (latest) => {
     if (!loaded) return;
     const rawIndex = Math.floor(latest * (FRAME_COUNT - 1));
     const index = Math.min(Math.max(rawIndex, 0), FRAME_COUNT - 1);
@@ -211,20 +215,16 @@ export default function HeroSequence() {
 function Nav() {
   return (
     <nav
-      className="fixed left-0 right-0 top-0 z-[100] flex items-center justify-between px-6 py-4 md:px-10"
-      style={{
-        borderBottom: "0.5px solid rgba(62,207,142,0.08)",
-        background: "rgba(5,5,5,0.85)",
-        backdropFilter: "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)"
-      }}
+      className="fixed left-1/2 top-5 z-[100] flex w-[min(100%-1.25rem,56rem)] -translate-x-1/2 items-center justify-between gap-3 rounded-full border border-white/[0.1] bg-[rgba(8,10,9,0.55)] px-3 py-2 shadow-[0_12px_48px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-xl md:gap-6 md:px-5 md:py-2.5"
+      style={{ WebkitBackdropFilter: "blur(20px)" }}
+      aria-label="Primary"
     >
-      <div className="text-[17px] font-medium tracking-tight text-white/90">
+      <Link href="/" className="shrink-0 pl-1 text-[16px] font-medium tracking-tight text-white/90 md:text-[17px]">
         <span className="text-white/90">Er</span>
         <span style={{ color: "#3ECF8E" }}>.</span>
         <span className="text-white/90">Forge</span>
-      </div>
-      <div className="flex items-center gap-5 md:gap-7">
+      </Link>
+      <div className="flex min-w-0 flex-1 items-center justify-end gap-3 sm:gap-5 md:gap-7">
         {[
           { href: "#features", label: "Features" },
           { href: "#how-it-works", label: "How it works" },
@@ -233,15 +233,15 @@ function Nav() {
           <a
             key={link.href}
             href={link.href}
-            className="hidden cursor-pointer text-[13px] text-white/40 transition-colors hover:text-white sm:inline"
+            className="hidden cursor-pointer text-[12px] text-white/45 transition-colors hover:text-white/90 md:inline md:text-[13px]"
           >
             {link.label}
           </a>
         ))}
         <Link
           href="/login"
-          className="rounded-[8px] px-[18px] py-2 text-[13px] font-semibold"
-          style={{ background: "#3ECF8E", color: "#050505" }}
+          className="shrink-0 rounded-full px-[14px] py-2 text-[12px] font-semibold shadow-[0_0_24px_rgba(62,207,142,0.2)] transition-[transform,box-shadow] hover:-translate-y-px hover:shadow-[0_0_28px_rgba(62,207,142,0.35)] md:px-[18px] md:text-[13px]"
+          style={{ background: "linear-gradient(135deg, #4dd89f 0%, #3ECF8E 50%, #2eb87a 100%)", color: "#050505" }}
         >
           Get started free
         </Link>
@@ -275,10 +275,8 @@ function HeroOpeningText({ scrollProgress }: { scrollProgress: MotionValue<numbe
       className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center"
     >
       <div
-        className="mb-6 inline-flex items-center gap-2 rounded-full px-4 py-[5px] text-[11px]"
+        className="mb-6 inline-flex items-center gap-2 rounded-full border border-[rgba(62,207,142,0.22)] bg-[rgba(62,207,142,0.08)] px-4 py-[6px] text-[11px] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-md"
         style={{
-          background: "rgba(62,207,142,0.08)",
-          border: "0.5px solid rgba(62,207,142,0.25)",
           color: "#3ECF8E"
         }}
       >
@@ -303,14 +301,17 @@ function HeroOpeningText({ scrollProgress }: { scrollProgress: MotionValue<numbe
       <div className="pointer-events-auto flex flex-wrap justify-center gap-3">
         <Link
           href="/login"
-          className="rounded-lg px-6 py-3 text-[13px] font-semibold"
-          style={{ background: "#3ECF8E", color: "#050505" }}
+          className="rounded-full px-6 py-3 text-[13px] font-semibold shadow-[0_8px_32px_rgba(62,207,142,0.25)] transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-[0_12px_36px_rgba(62,207,142,0.35)]"
+          style={{
+            background: "linear-gradient(135deg, #4dd89f 0%, #3ECF8E 45%, #2eb87a 100%)",
+            color: "#050505"
+          }}
         >
           Connect LeetCode free
         </Link>
         <a
           href="#how-it-works"
-          className="rounded-lg border border-white/[0.12] bg-transparent px-6 py-3 text-[13px] text-white/50 transition-colors hover:text-white/80"
+          className="rounded-full border border-white/[0.12] bg-[rgba(12,12,12,0.45)] px-6 py-3 text-[13px] text-white/55 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-md transition-colors hover:border-white/20 hover:text-white/90"
         >
           See how it works ↓
         </a>
@@ -361,8 +362,8 @@ function ScrollBeat({
           background: "rgba(5,5,5,0.72)",
           backdropFilter: "blur(16px)",
           WebkitBackdropFilter: "blur(16px)",
-          border: "0.5px solid rgba(62,207,142,0.18)",
-          boxShadow: "0 0 32px rgba(62,207,142,0.05)"
+          border: "0.5px solid rgba(62,207,142,0.2)",
+          boxShadow: "0 0 32px rgba(62,207,142,0.06)"
         }}
       >
         <p className="mb-[6px] text-[15px] font-medium tracking-tight text-white/90">{title}</p>

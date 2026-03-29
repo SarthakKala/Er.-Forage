@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { SkillsTimeline } from "@/components/charts/SkillsTimeline";
@@ -8,7 +9,7 @@ import { SkillBar } from "@/components/ui/SkillBar";
 import { ErrorState, LoadingCards } from "@/components/ui/States";
 import { api } from "@/lib/axios";
 import type { Assignment, SkillHistory, SkillPoint, Submission } from "@/lib/types";
-import { formatDateTime, parseAiAnalysis } from "@/lib/utils";
+import { formatDateTime, orderSkillScores, parseAiAnalysis } from "@/lib/utils";
 
 export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
@@ -93,7 +94,11 @@ export default function DashboardPage() {
   const recent = submissions.slice(0, 5);
   const latestAnalysis = parseAiAnalysis(latest?.ai_analysis ?? null);
 
-  const topSkills = useMemo(() => skills.slice(0, 12), [skills]);
+  const topSkills = useMemo(() => orderSkillScores(skills).slice(0, 12), [skills]);
+  const avgSkill = useMemo(() => {
+    if (skills.length === 0) return null;
+    return Math.round(skills.reduce((a, s) => a + s.score, 0) / skills.length);
+  }, [skills]);
 
   if (loading)
     return (
@@ -140,14 +145,14 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="page-content space-y-8">
-      <section className="grid grid-cols-1 gap-6 lg:grid-cols-[3fr_2fr]">
-        <article className="dashboard-card rounded-xl p-5" style={{ background: "var(--bg-surface)", border: "0.5px solid var(--bg-border)" }}>
+    <div className="page-content space-y-6 lg:space-y-8">
+      <section className="grid grid-cols-1 gap-5 lg:grid-cols-12 lg:items-stretch lg:gap-6">
+        <article className="dashboard-card glass-panel min-h-[320px] rounded-[14px] p-5 lg:col-span-7 lg:min-h-[380px]">
           <h2 className="text-[18px] font-medium tracking-[-0.3px]">Latest submission</h2>
           <p className="mt-1 text-[13px]" style={{ color: "var(--text-secondary)" }}>
             {latest.problem_title} · {latest.result}
           </p>
-          <pre className="mt-4 max-h-[220px] overflow-auto rounded-lg p-4 text-[12px]" style={{ background: "var(--bg-base)", border: "0.5px solid var(--bg-border)" }}>
+          <pre className="mt-4 max-h-[200px] overflow-auto rounded-[10px] border border-white/[0.06] bg-[rgba(5,5,5,0.45)] p-4 text-[12px] backdrop-blur-sm">
             {latest.submitted_code ?? "// No code captured"}
           </pre>
           <div className="mt-4 h-[3px] rounded bg-[rgba(62,207,142,0.2)]">
@@ -173,24 +178,45 @@ export default function DashboardPage() {
           </div>
         </article>
 
-        <article className="dashboard-card rounded-xl p-5" style={{ background: "var(--bg-surface)", border: "0.5px solid var(--bg-border)" }}>
-          <h2 className="text-[18px] font-medium tracking-[-0.3px]">Skill scores</h2>
+        <article className="dashboard-card glass-panel-accent flex min-h-[280px] flex-col justify-between rounded-[14px] p-6 lg:col-span-5">
+          <div>
+            <p className="text-[11px] font-medium uppercase tracking-[0.14em]" style={{ color: "rgba(255,255,255,0.35)" }}>
+              Skill pulse
+            </p>
+            <p className="mt-3 text-[clamp(36px,8vw,52px)] font-medium tabular-nums tracking-[-2px]" style={{ color: "#3ECF8E" }}>
+              {avgSkill ?? "—"}
+            </p>
+            <p className="mt-2 max-w-[220px] text-[13px] leading-relaxed" style={{ color: "rgba(255,255,255,0.45)" }}>
+              Average score across your full taxonomy — open the profile for the circular breakdown.
+            </p>
+          </div>
+          <Link
+            href="/skills"
+            className="mt-6 inline-flex w-fit items-center rounded-full px-5 py-2.5 text-[13px] font-medium transition-opacity hover:opacity-90"
+            style={{ background: "var(--green)", color: "#050505" }}
+          >
+            Skill profile →
+          </Link>
+        </article>
+      </section>
+
+      <section className="grid grid-cols-1 gap-5 lg:grid-cols-12 lg:gap-6">
+        <article className="dashboard-card glass-panel rounded-[14px] p-5 lg:col-span-4">
+          <h2 className="text-[18px] font-medium tracking-[-0.3px]">Top concepts</h2>
+          <p className="mt-1 text-[12px]" style={{ color: "var(--text-muted)" }}>
+            Ordered by taxonomy
+          </p>
           <div className="mt-5 space-y-4">
             {topSkills.map((s) => (
               <SkillBar key={s.concept} concept={s.concept} score={s.score} />
             ))}
           </div>
         </article>
-      </section>
 
-      <section className="grid grid-cols-1 gap-6 lg:grid-cols-[3fr_2fr]">
-        <article className="dashboard-card rounded-xl p-5" style={{ background: "var(--bg-surface)", border: "0.5px solid var(--bg-border)" }}>
+        <article className="dashboard-card glass-panel min-h-[280px] rounded-[14px] p-5 lg:col-span-8">
           <h2 className="text-[18px] font-medium tracking-[-0.3px]">This week&apos;s assignment</h2>
           {assignments.length === 0 ? (
-            <div
-              className="mt-4 rounded-xl p-4"
-              style={{ background: "var(--bg-base)", border: "0.5px solid var(--bg-border)" }}
-            >
+            <div className="mt-4 rounded-[12px] border border-white/[0.06] bg-[rgba(5,5,5,0.35)] p-4 backdrop-blur-sm">
               <p className="text-[14px]" style={{ color: "rgba(255,255,255,0.9)" }}>
                 No assignment yet
               </p>
@@ -203,8 +229,7 @@ export default function DashboardPage() {
               {assignments.map((a) => (
                 <li
                   key={a.id}
-                  className="flex items-center justify-between rounded-lg px-3 py-3"
-                  style={{ background: "var(--bg-base)", border: "0.5px solid var(--bg-border)" }}
+                  className="flex items-center justify-between rounded-[10px] border border-white/[0.06] bg-[rgba(5,5,5,0.35)] px-3 py-3 backdrop-blur-sm"
                 >
                   <div>
                     <p className="text-[14px]">{a.problem_title}</p>
@@ -212,13 +237,7 @@ export default function DashboardPage() {
                       {a.concept_target}
                     </p>
                   </div>
-                  <a
-                    href={a.platform_url}
-                    target="_blank"
-                    className="text-[13px]"
-                    style={{ color: "var(--green)" }}
-                    rel="noreferrer"
-                  >
+                  <a href={a.platform_url} target="_blank" className="text-[13px] font-medium" style={{ color: "var(--green)" }} rel="noreferrer">
                     Solve →
                   </a>
                 </li>
@@ -226,27 +245,32 @@ export default function DashboardPage() {
             </ul>
           )}
         </article>
-        <article className="dashboard-card rounded-xl p-5" style={{ background: "var(--bg-surface)", border: "0.5px solid var(--bg-border)" }}>
+      </section>
+
+      <section className="grid grid-cols-1 gap-5 lg:grid-cols-12 lg:gap-6">
+        <article className="dashboard-card glass-panel rounded-[14px] p-5 lg:col-span-8">
           <h2 className="text-[18px] font-medium tracking-[-0.3px]">8-week growth</h2>
-          <div className="mt-4 h-[260px]">
+          <div className="mt-4 h-[min(280px,40vh)] min-h-[220px] lg:h-[300px]">
             <SkillsTimeline history={history} />
           </div>
         </article>
-      </section>
 
-      <section className="dashboard-card rounded-xl p-5" style={{ background: "var(--bg-surface)", border: "0.5px solid var(--bg-border)" }}>
-        <h2 className="text-[18px] font-medium tracking-[-0.3px]">Recent activity</h2>
-        <ul className="mt-4 divide-y" style={{ borderColor: "var(--bg-border)" }}>
-          {recent.map((s) => (
-            <li key={s.id} className="flex items-center justify-between py-3 text-[13px]">
-              <div>
-                <p>{s.problem_title}</p>
-                <p style={{ color: "var(--text-secondary)" }}>{s.result}</p>
-              </div>
-              <span style={{ color: "var(--text-muted)" }}>{formatDateTime(s.submitted_at)}</span>
-            </li>
-          ))}
-        </ul>
+        <article className="dashboard-card glass-panel max-h-[min(420px,55vh)] overflow-y-auto rounded-[14px] p-5 lg:col-span-4">
+          <h2 className="text-[18px] font-medium tracking-[-0.3px]">Recent activity</h2>
+          <ul className="mt-4 divide-y divide-white/[0.06]">
+            {recent.map((s) => (
+              <li key={s.id} className="flex items-center justify-between gap-3 py-3 text-[13px]">
+                <div className="min-w-0">
+                  <p className="truncate">{s.problem_title}</p>
+                  <p style={{ color: "var(--text-secondary)" }}>{s.result}</p>
+                </div>
+                <span className="shrink-0 text-right" style={{ color: "var(--text-muted)" }}>
+                  {formatDateTime(s.submitted_at)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </article>
       </section>
     </div>
   );

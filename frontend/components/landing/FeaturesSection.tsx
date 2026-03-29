@@ -19,7 +19,7 @@ const cards = [
 
 export default function FeaturesSection() {
   return (
-    <section id="features" className="scroll-mt-24 bg-[#050505] py-24">
+    <section id="features" className="scroll-mt-[100px] bg-transparent py-24">
       <div className="mx-auto w-full max-w-[1120px] px-6 text-center sm:px-10 lg:px-12">
         <p className="text-[11px] uppercase tracking-[0.08em] text-[#3ECF8E]">Features</p>
         <h2 className="mx-auto mt-3 max-w-2xl text-[32px] font-medium tracking-[-1px] text-white/90 md:text-[40px]">
@@ -34,12 +34,8 @@ export default function FeaturesSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.45, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
-              className="rounded-[12px] p-6"
-              style={{
-                background: "#0f0f0f",
-                border: "0.5px solid rgba(255,255,255,0.06)",
-                borderTop: "2px solid rgba(62,207,142,0.45)"
-              }}
+              className={`p-6 ${i === 1 ? "glass-panel-accent" : "glass-panel"}`}
+              style={i !== 1 ? { borderTop: "2px solid rgba(62,207,142,0.4)" } : undefined}
             >
               <h3 className="text-[18px] font-medium tracking-[-0.3px] text-white/90">{c.title}</h3>
               <p className="mt-2 text-[14px] leading-relaxed text-white/50">{c.body}</p>

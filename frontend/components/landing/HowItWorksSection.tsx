@@ -27,7 +27,7 @@ const steps = [
 
 export default function HowItWorksSection() {
   return (
-    <section id="how-it-works" className="scroll-mt-24 bg-[#050505] py-24">
+    <section id="how-it-works" className="scroll-mt-[100px] bg-transparent py-24">
       <div className="mx-auto w-full max-w-[1120px] px-6 text-center sm:px-10 lg:px-12">
         <p className="text-[11px] uppercase tracking-[0.08em] text-[#3ECF8E]">How it works</p>
         <h2 className="mx-auto mt-3 max-w-2xl text-[32px] font-medium tracking-[-1px] text-white/90 md:text-[40px]">
@@ -44,18 +44,20 @@ export default function HowItWorksSection() {
               transition={{ duration: 0.45, delay: i * 0.06 }}
               className="relative pb-12 text-center last:pb-0"
             >
-              <span
-                className="mx-auto flex h-7 w-7 items-center justify-center rounded-full text-[13px] font-medium"
-                style={{
-                  background: "rgba(62,207,142,0.12)",
-                  border: "0.5px solid rgba(62,207,142,0.25)",
-                  color: "#3ECF8E"
-                }}
-              >
-                {s.n}
-              </span>
-              <h3 className="mt-4 text-[18px] font-medium text-white/90">{s.title}</h3>
-              <p className="mt-2 text-[14px] leading-relaxed text-white/50">{s.body}</p>
+              <div className="glass-panel mx-auto max-w-md rounded-[14px] px-6 py-6">
+                <span
+                  className="mx-auto flex h-7 w-7 items-center justify-center rounded-full text-[13px] font-medium"
+                  style={{
+                    background: "rgba(62,207,142,0.14)",
+                    border: "1px solid rgba(62,207,142,0.28)",
+                    color: "#3ECF8E"
+                  }}
+                >
+                  {s.n}
+                </span>
+                <h3 className="mt-4 text-[18px] font-medium text-white/90">{s.title}</h3>
+                <p className="mt-2 text-[14px] leading-relaxed text-white/50">{s.body}</p>
+              </div>
               {i < steps.length - 1 ? (
                 <div
                   className="mx-auto mt-8 h-10 w-px"

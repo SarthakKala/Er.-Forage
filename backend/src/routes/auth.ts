@@ -8,10 +8,30 @@ import type { User } from "../models/users";
 
 export const authRouter = Router();
 
-authRouter.get(
-  "/google",
-  passport.authenticate("google", { scope: ["profile", "email"], session: false })
-);
+function safeOAuthRedirectPath(raw: unknown): string {
+  if (typeof raw !== "string" || raw.length === 0) return "";
+  const p = raw.trim();
+  if (!p.startsWith("/") || p.startsWith("//")) return "";
+  if (p.includes("..") || p.includes("\\")) return "";
+  if (p.length > 512) return "";
+  return p;
+}
+
+authRouter.get("/google", (req, res, next) => {
+  const redirectAfter = safeOAuthRedirectPath(req.query.redirect);
+  const opts: {
+    scope: string[];
+    session: boolean;
+    state?: string;
+  } = {
+    scope: ["profile", "email"],
+    session: false
+  };
+  if (redirectAfter) {
+    opts.state = Buffer.from(redirectAfter, "utf8").toString("base64url");
+  }
+  passport.authenticate("google", opts)(req, res, next);
+});
 
 authRouter.get("/google/callback", (req, res, next) => {
   passport.authenticate("google", { session: false }, (err: Error | null, user: User | false | undefined) => {
@@ -22,9 +42,21 @@ authRouter.get("/google/callback", (req, res, next) => {
     if (!user) {
       return res.redirect(`${env.FRONTEND_URL}/login?error=user_not_found`);
     }
+    let redirectPath = "";
+    try {
+      const st = req.query.state;
+      if (typeof st === "string" && st.length > 0) {
+        redirectPath = Buffer.from(st, "base64url").toString("utf8");
+        redirectPath = safeOAuthRedirectPath(redirectPath);
+      }
+    } catch {
+      redirectPath = "";
+    }
     try {
       const token = jwt.sign({ sub: user.id, email: user.email }, env.JWT_SECRET, { expiresIn: "7d" });
-      return res.redirect(`${env.FRONTEND_URL}/login?token=${encodeURIComponent(token)}`);
+      const params = new URLSearchParams({ token });
+      if (redirectPath) params.set("redirect", redirectPath);
+      return res.redirect(`${env.FRONTEND_URL}/login?${params.toString()}`);
     } catch (e) {
       console.error("[oauth] JWT sign failed:", e);
       return res.redirect(`${env.FRONTEND_URL}/login?error=oauth_failed`);

@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="border-t border-white/[0.06] bg-[#050505] py-6">
+    <footer className="border-t border-white/[0.08] bg-[rgba(5,5,5,0.5)] py-8 backdrop-blur-md">
       <div className="mx-auto flex w-full max-w-[1120px] flex-col items-center justify-center gap-4 px-6 text-center sm:px-10 lg:px-12 md:flex-row md:justify-between md:text-left">
         <div className="text-[14px] text-white/25">
           <span className="text-white/40">Er</span>

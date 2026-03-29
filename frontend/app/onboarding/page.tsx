@@ -1,29 +1,50 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { SkillsRadar } from "@/components/charts/SkillsRadar";
 import { ErrorState, InlineSpinner, LoadingCards } from "@/components/ui/States";
 import { api } from "@/lib/axios";
+import { AUTH_LS_KEY } from "@/lib/auth-storage";
 import type { SkillPoint } from "@/lib/types";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 
 type Step = 1 | 2 | 3;
 
+/** Rotating copy while sync runs — avoids a “frozen” feel when the bar nears completion */
+const SYNC_MESSAGES = [
+  "Pulling your latest submissions from LeetCode…",
+  "Normalizing problems, languages, and outcomes…",
+  "Spotting patterns in how you approach each topic…",
+  "Scoring concepts against the full taxonomy…",
+  "Running AI pass on code and explanations…",
+  "Stitching history into your live skill profile…",
+  "Polishing aggregates — almost ready to unlock…"
+];
+
 export default function OnboardingPage() {
   const router = useRouter();
   const [step, setStep] = useState<Step>(1);
   const [sessionToken, setSessionToken] = useState("");
   const [csrfToken, setCsrfToken] = useState("");
-  const [statusText, setStatusText] = useState("Waiting to start sync...");
+  const [syncMessageIndex, setSyncMessageIndex] = useState(0);
   const [skills, setSkills] = useState<SkillPoint[]>([]);
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState(8);
+  const pollRef = useRef<number | null>(null);
+  const tickerRef = useRef<number | null>(null);
+
+  function clearSyncIntervals() {
+    if (pollRef.current) clearInterval(pollRef.current);
+    if (tickerRef.current) clearInterval(tickerRef.current);
+    pollRef.current = null;
+    tickerRef.current = null;
+  }
 
   useEffect(() => {
-    const token = localStorage.getItem("erforge_jwt");
+    const token = localStorage.getItem(AUTH_LS_KEY);
     if (!token) {
       router.replace("/login");
       return;
@@ -35,6 +56,19 @@ export default function OnboardingPage() {
       })
       .catch(() => null);
   }, [router]);
+
+  useEffect(() => {
+    return () => clearSyncIntervals();
+  }, []);
+
+  useEffect(() => {
+    if (step !== 2) return;
+    setSyncMessageIndex(0);
+    const id = window.setInterval(() => {
+      setSyncMessageIndex((i) => (i + 1) % SYNC_MESSAGES.length);
+    }, 2400);
+    return () => clearInterval(id);
+  }, [step]);
 
   useGSAP(() => {
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -60,45 +94,47 @@ export default function OnboardingPage() {
   }
 
   async function runSyncFlow() {
-    setStatusText("Sync started. Fetching your submissions...");
+    clearSyncIntervals();
     setProgress(12);
-    const progressTicker = window.setInterval(() => {
+    /**
+     * Progress is intentionally decoupled from wall time: fast ramp to ~82%, then slow creep toward ~99%
+     * while the backend works, so the bar never “dies” at 92% like a hard cap.
+     */
+    tickerRef.current = window.setInterval(() => {
       setProgress((prev) => {
-        const next = prev + Math.floor(Math.random() * 8 + 3);
-        return Math.min(next, 92);
+        const p = prev;
+        if (p >= 99) return Math.min(p + Math.random() * 0.06, 99.6);
+        if (p >= 82) return Math.min(p + (Math.random() * 0.85 + 0.12) * (1 + (98 - p) * 0.04), 99.2);
+        const bump = Math.random() * 7 + 3;
+        return Math.min(p + bump, 82);
       });
-    }, 900);
+    }, 650);
 
-    const poll = setInterval(async () => {
+    pollRef.current = window.setInterval(async () => {
       try {
         const r = await api.get<{ status: string; lastSyncedAt: string | null; errorMessage: string | null }>("/sync/status");
         if (r.data.status === "in_progress") {
-          setStatusText("Analyzing submissions and generating your profile...");
           return;
         }
         if (r.data.status === "failed") {
-          clearInterval(poll);
-          clearInterval(progressTicker);
+          clearSyncIntervals();
           setError(r.data.errorMessage ?? "Sync failed.");
           return;
         }
         if (r.data.status === "complete") {
-          clearInterval(poll);
-          clearInterval(progressTicker);
+          clearSyncIntervals();
           setProgress(100);
           await loadProfile();
           setStep(3);
         }
       } catch {
-        clearInterval(poll);
-        clearInterval(progressTicker);
+        clearSyncIntervals();
         setError("Failed to poll sync status.");
       }
     }, 2000);
 
     api.post("/sync").catch(() => {
-      clearInterval(poll);
-      clearInterval(progressTicker);
+      clearSyncIntervals();
       setError("Sync failed.");
     });
   }
@@ -118,9 +154,20 @@ export default function OnboardingPage() {
     [skills]
   );
 
+  const progressLabel =
+    progress >= 100 ? "100" : progress >= 99 ? progress.toFixed(1) : String(Math.round(Math.min(progress, 99.9)));
+
   return (
-    <main className="page-content mx-auto flex min-h-screen w-full max-w-[920px] items-center px-6 py-16">
-      <section className="w-full rounded-xl p-8" style={{ background: "var(--bg-surface)", border: "0.5px solid var(--bg-border)" }}>
+    <main className="relative page-content mx-auto flex min-h-screen w-full max-w-[920px] items-center px-6 py-16">
+      <div
+        className="pointer-events-none fixed inset-0 -z-10"
+        aria-hidden
+        style={{
+          background:
+            "radial-gradient(ellipse 80% 50% at 50% -20%, rgba(62,207,142,0.12), transparent 55%), radial-gradient(ellipse 60% 40% at 100% 100%, rgba(62,207,142,0.06), transparent 50%), #050505"
+        }}
+      />
+      <section className="glass-panel w-full rounded-[14px] p-8">
         <div className="mb-8 flex gap-3">
           {[1, 2, 3].map((n) => (
             <span
@@ -170,20 +217,36 @@ export default function OnboardingPage() {
         {step === 2 ? (
           <div>
             <h1 className="text-[42px] font-medium tracking-[-1.5px]">Syncing your history</h1>
-            <p className="mt-3 text-[15px]" style={{ color: "var(--text-secondary)" }}>
-              {statusText}
+            <p
+              key={syncMessageIndex}
+              className="mt-4 min-h-[3rem] text-[15px] leading-relaxed transition-opacity duration-300"
+              style={{ color: "var(--text-secondary)" }}
+            >
+              {SYNC_MESSAGES[syncMessageIndex]}
             </p>
-            <div className="mt-8 h-[3px] w-full overflow-hidden rounded" style={{ background: "rgba(255,255,255,0.06)" }}>
+            <div
+              className="mt-8 h-[4px] w-full overflow-hidden rounded-full"
+              style={{ background: "rgba(255,255,255,0.07)", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.04)" }}
+            >
               <div
-                className="h-full rounded transition-[width] duration-500"
-                style={{ width: `${progress}%`, background: "var(--green)" }}
+                className="h-full rounded-full transition-[width] duration-700 ease-out"
+                style={{
+                  width: `${Math.min(progress, 100)}%`,
+                  background: "linear-gradient(90deg, #2bbf7a 0%, #3ECF8E 45%, #6ef0b8 100%)",
+                  boxShadow: "0 0 18px rgba(62,207,142,0.38)"
+                }}
               />
             </div>
-            <p className="mt-3 text-[12px] tabular-nums" style={{ color: "var(--text-muted)" }}>
-              {progress}%
-            </p>
+            <div className="mt-3 flex flex-wrap items-baseline justify-between gap-3">
+              <p className="text-[12px] tabular-nums" style={{ color: "var(--text-muted)" }}>
+                {progressLabel}%
+              </p>
+              <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>
+                Large histories can take a minute — the bar keeps moving until we&apos;re done.
+              </p>
+            </div>
             <div className="mt-6">
-              <InlineSpinner label="Processing..." />
+              <InlineSpinner label="Working…" />
             </div>
           </div>
         ) : null}

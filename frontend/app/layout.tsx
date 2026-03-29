@@ -5,6 +5,7 @@ export const metadata: Metadata = {
   title: "Er. Forge — Engineering Intelligence",
   description:
     "Turn your coding work into structured skill growth. Connect LeetCode, get AI analysis, build a growth portfolio you can show in interviews.",
+  themeColor: "#050505",
   openGraph: {
     title: "Er. Forge",
     description: "Engineering intelligence for developers.",
