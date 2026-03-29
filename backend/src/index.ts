@@ -31,7 +31,16 @@ app.use(
     origin: (origin, callback) => {
       const allowed = new Set<string>();
       if (env.FRONTEND_URL) allowed.add(env.FRONTEND_URL);
-      if (env.NODE_ENV === "development") allowed.add("http://localhost:3000");
+      if (env.NODE_ENV === "development") {
+        for (const o of [
+          "http://localhost:3000",
+          "http://localhost:3001",
+          "http://127.0.0.1:3000",
+          "http://127.0.0.1:3001"
+        ]) {
+          allowed.add(o);
+        }
+      }
       if (!origin) return callback(null, true);
       return callback(null, allowed.has(origin));
     },

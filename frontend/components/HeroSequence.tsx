@@ -69,10 +69,11 @@ export default function HeroSequence() {
       return;
     }
 
-    const scale = Math.min(W / img.naturalWidth, H / img.naturalHeight);
+    // "Cover" (not "contain"): fill the viewport so there are no letterboxed black bars.
+    // Crops edges of the frame when aspect ratio ≠ viewport — matches full-bleed hero behavior.
+    const scale = Math.max(W / img.naturalWidth, H / img.naturalHeight);
     const drawW = img.naturalWidth * scale;
     const drawH = img.naturalHeight * scale;
-    // Integer-aligned rects reduce subpixel blur when compositing
     const offsetX = Math.round((W - drawW) / 2);
     const offsetY = Math.round((H - drawH) / 2);
     const rw = Math.round(drawW);
@@ -148,7 +149,8 @@ export default function HeroSequence() {
     <>
       <Nav />
 
-      <div ref={containerRef} className="relative" style={{ height: "400vh" }}>
+      {/* Taller = more scroll distance for the same 0→1 progress (slower-feeling animation) */}
+      <div ref={containerRef} className="relative" style={{ height: "1500vh" }}>
         <div className="sticky top-0 h-screen w-full overflow-hidden bg-[#050505]">
           {!loaded && <LoadingScreen progress={loadProgress} />}
 
@@ -371,19 +373,20 @@ function ScrollBeat({
   );
 }
 
+/** Bouncing arrow only (no “Scroll to explore” label). */
 function ScrollHint({ scrollProgress }: { scrollProgress: MotionValue<number> }) {
   const opacity = useTransform(scrollProgress, [0, 0.06], [1, 0]);
 
   return (
     <motion.div
       style={{ opacity }}
-      className="pointer-events-none absolute bottom-[4%] left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2"
+      className="pointer-events-none absolute bottom-[4%] left-1/2 z-10 flex -translate-x-1/2 items-center justify-center"
+      aria-hidden
     >
-      <span className="text-[11px] uppercase tracking-widest text-white/20">Scroll to explore</span>
       <motion.div
         animate={{ y: [0, 8, 0] }}
         transition={{ repeat: Infinity, duration: 1.4, ease: "easeInOut" }}
-        style={{ color: "#3ECF8E", fontSize: "16px" }}
+        style={{ color: "#3ECF8E", fontSize: "18px", lineHeight: 1 }}
       >
         ↓
       </motion.div>

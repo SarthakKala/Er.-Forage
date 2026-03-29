@@ -8,7 +8,8 @@ passport.use(
     {
       clientID: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "/api/v1/auth/google/callback"
+      // Must be an absolute URL and must match Google Cloud "Authorized redirect URIs" exactly.
+      callbackURL: `${env.BACKEND_URL}/api/v1/auth/google/callback`
     },
     async (
       _accessToken: string,

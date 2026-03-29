@@ -4,6 +4,7 @@ import passport from "passport";
 import { env } from "../config/env";
 import { authMiddleware } from "../middleware/auth";
 import { deleteUserById } from "../models/users";
+import type { User } from "../models/users";
 
 export const authRouter = Router();
 
@@ -12,24 +13,24 @@ authRouter.get(
   passport.authenticate("google", { scope: ["profile", "email"], session: false })
 );
 
-authRouter.get(
-  "/google/callback",
-  passport.authenticate("google", { session: false, failureRedirect: `${env.FRONTEND_URL}/login?error=oauth_failed` }),
-  (req, res) => {
-    if (!req.user) {
+authRouter.get("/google/callback", (req, res, next) => {
+  passport.authenticate("google", { session: false }, (err: Error | null, user: User | false | undefined) => {
+    if (err) {
+      console.error("[oauth] Google callback error:", err.message);
+      return res.redirect(`${env.FRONTEND_URL}/login?error=oauth_failed`);
+    }
+    if (!user) {
       return res.redirect(`${env.FRONTEND_URL}/login?error=user_not_found`);
     }
-
-    const token = jwt.sign(
-      { sub: req.user.id, email: req.user.email },
-      env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
-
-    const redirectUrl = `${env.FRONTEND_URL}/login?token=${encodeURIComponent(token)}`;
-    return res.redirect(redirectUrl);
-  }
-);
+    try {
+      const token = jwt.sign({ sub: user.id, email: user.email }, env.JWT_SECRET, { expiresIn: "7d" });
+      return res.redirect(`${env.FRONTEND_URL}/login?token=${encodeURIComponent(token)}`);
+    } catch (e) {
+      console.error("[oauth] JWT sign failed:", e);
+      return res.redirect(`${env.FRONTEND_URL}/login?error=oauth_failed`);
+    }
+  })(req, res, next);
+});
 
 authRouter.get("/me", authMiddleware, (req, res) => {
   return res.json({ user: req.user });

@@ -11,9 +11,13 @@ function getEnv(name: string): string {
   return value;
 }
 
+const PORT = Number(process.env.PORT ?? 4000);
+
 export const env = {
   NODE_ENV: process.env.NODE_ENV ?? "development",
-  PORT: Number(process.env.PORT ?? 4000),
+  PORT,
+  /** Public base URL of this API (no trailing slash). Used for Google OAuth callback. */
+  BACKEND_URL: (process.env.BACKEND_URL ?? `http://localhost:${PORT}`).replace(/\/+$/, ""),
   // Default matches the V1 specification so local boot doesn't fail.
   FRONTEND_URL: process.env.FRONTEND_URL ?? "http://localhost:3000",
   DATABASE_URL: getEnv("DATABASE_URL"),
