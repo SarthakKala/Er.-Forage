@@ -244,7 +244,7 @@ er_forage/
 
 # Er. Forge Monorepo
 
-Sprint 1 foundation:
+Foundation:
 
 - `frontend/` - Next.js 14 (App Router, TypeScript, TailwindCSS)
 - `backend/` - Express + TypeScript with Google OAuth, JWT, and protected API routes
@@ -261,14 +261,3 @@ Sprint 1 foundation:
    - Frontend: `npm run dev:frontend`
 4. Open `http://localhost:3000/login`
 
-## Sprint 1 Auth Flow
-
-1. Click **Continue with Google** on `/login`
-2. Google callback redirects back to frontend with JWT
-3. JWT is stored in localStorage
-4. Click **Check /auth/me** to verify current profile
-
-## Deployment Targets
-
-- Frontend deploy: Vercel (root `frontend/`)
-- Backend deploy: Render (root `backend/`, `render.yaml` included)
