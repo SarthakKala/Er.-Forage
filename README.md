@@ -2,7 +2,11 @@
 
 <br />
 
+<<<<<<< HEAD
 # ⚡ Er. Forge
+=======
+#  Er. Forge
+>>>>>>> 8d48cf5fa71efb48b3322e388deac497d3a0a86d
 
 ### *Others help you solve problems. Er. Forge ensures you stop creating the same ones.*
 
@@ -11,6 +15,7 @@
 You practice LeetCode. You get better at LeetCode.<br />
 **Er. Forge makes you better at engineering.**
 
+<<<<<<< HEAD
 <br />
 
 [![Next.js](https://img.shields.io/badge/Next.js_14-000000?style=flat&logo=next.js&logoColor=white)](https://nextjs.org/)
@@ -18,6 +23,8 @@ You practice LeetCode. You get better at LeetCode.<br />
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=flat&logo=supabase&logoColor=white)](https://supabase.com/)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+=======
+>>>>>>> 8d48cf5fa71efb48b3322e388deac497d3a0a86d
 
 </div>
 
@@ -321,51 +328,36 @@ CREATE INDEX IF NOT EXISTS platform_connections_user_idx
 
 ```
 er_forage/
-  backend/
-    src/
-      config/        # env loading
-      jobs/          # cron jobs
-      lib/           # helpers (db, leetcode utils, etc.)
-      middleware/    # auth, error handling, rate limiting
-      models/        # db queries
-      routes/        # /api/v1 endpoints
-      services/      # orchestration (analysis, assignments, portfolio snapshots)
-    migrations/      # SQL migrations
-    scripts/         # one-off scripts (demo seed)
-  frontend/
-    app/             # Next.js App Router pages
-    components/      # UI / layout / charts
-    lib/             # axios + types + utils
-    public/          # static assets (favicon)
+├── backend/
+│   ├── src/
+│   │   ├── adapters/       # Platform sync (LeetCode)
+│   │   ├── ai/             # Prompt builder + response parser
+│   │   ├── config/         # Environment + Passport setup
+│   │   ├── jobs/           # Cron jobs (weekly skill snapshots)
+│   │   ├── lib/            # DB, OpenRouter, Supabase, encryption
+│   │   ├── middleware/      # Auth + error handling
+│   │   ├── models/         # Database queries
+│   │   ├── routes/         # /api/v1 endpoints
+│   │   └── services/       # Orchestration (analysis, assignments, portfolio)
+│   ├── migrations/         # SQL migration files
+│   └── scripts/            # Demo seed script
+└── frontend/
+    ├── app/
+    │   ├── (dashboard)/    # Skill profile, submissions, assignments, portfolio
+    │   ├── login/          # Google OAuth entry point
+    │   ├── onboarding/     # LeetCode connection setup
+    │   └── report/[token]/ # Public shareable growth report
+    ├── components/         # Charts, layout shell, UI primitives
+    └── lib/                # Axios client, types, utilities
 ```
 
-## Features
-- **Closed-loop growth**: observe → diagnose → prescribe → verify (not just “answers”)
-- **AI submission analysis**: root cause + missing mental model, not just a patch
-- **Skill taxonomy scoring**: consistent 12-concept profile with clear strengths/gaps
-- **Instructor loop assignments**: weekly targeted LeetCode problems (real links)
-- **Auto-completion detection**: accepted submissions complete assignments automatically
-- **Growth timeline**: weekly skill snapshots that visualize improvement
-- **Shareable recruiter report**: public, no-login link that looks impressive
+---
 
-# Er. Forge Monorepo
+## Deployment
 
 Sprint 1 foundation:
 
-- `frontend/` - Next.js 14 (App Router, TypeScript, TailwindCSS)
-- `backend/` - Express + TypeScript with Google OAuth, JWT, and protected API routes
-
-## Local Setup
-
-1. Copy env files:
-   - `backend/.env.example` -> `backend/.env`
-   - `frontend/.env.example` -> `frontend/.env.local`
-2. Run Migration 001 in Supabase SQL editor:
-   - `backend/migrations/001_users.sql`
-3. Start apps:
-   - Backend: `npm run dev:backend`
-   - Frontend: `npm run dev:frontend`
-4. Open `http://localhost:3000/login`
+---
 
 ## Sprint 1 Auth Flow
 
