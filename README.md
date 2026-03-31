@@ -321,42 +321,60 @@ CREATE INDEX IF NOT EXISTS platform_connections_user_idx
 
 ```
 er_forage/
-├── backend/
-│   ├── src/
-│   │   ├── adapters/       # Platform sync (LeetCode)
-│   │   ├── ai/             # Prompt builder + response parser
-│   │   ├── config/         # Environment + Passport setup
-│   │   ├── jobs/           # Cron jobs (weekly skill snapshots)
-│   │   ├── lib/            # DB, OpenRouter, Supabase, encryption
-│   │   ├── middleware/      # Auth + error handling
-│   │   ├── models/         # Database queries
-│   │   ├── routes/         # /api/v1 endpoints
-│   │   └── services/       # Orchestration (analysis, assignments, portfolio)
-│   ├── migrations/         # SQL migration files
-│   └── scripts/            # Demo seed script
-└── frontend/
-    ├── app/
-    │   ├── (dashboard)/    # Skill profile, submissions, assignments, portfolio
-    │   ├── login/          # Google OAuth entry point
-    │   ├── onboarding/     # LeetCode connection setup
-    │   └── report/[token]/ # Public shareable growth report
-    ├── components/         # Charts, layout shell, UI primitives
-    └── lib/                # Axios client, types, utilities
+  backend/
+    src/
+      config/        # env loading
+      jobs/          # cron jobs
+      lib/           # helpers (db, leetcode utils, etc.)
+      middleware/    # auth, error handling, rate limiting
+      models/        # db queries
+      routes/        # /api/v1 endpoints
+      services/      # orchestration (analysis, assignments, portfolio snapshots)
+    migrations/      # SQL migrations
+    scripts/         # one-off scripts (demo seed)
+  frontend/
+    app/             # Next.js App Router pages
+    components/      # UI / layout / charts
+    lib/             # axios + types + utils
+    public/          # static assets (favicon)
 ```
 
----
+## Features
+- **Closed-loop growth**: observe → diagnose → prescribe → verify (not just “answers”)
+- **AI submission analysis**: root cause + missing mental model, not just a patch
+- **Skill taxonomy scoring**: consistent 12-concept profile with clear strengths/gaps
+- **Instructor loop assignments**: weekly targeted LeetCode problems (real links)
+- **Auto-completion detection**: accepted submissions complete assignments automatically
+- **Growth timeline**: weekly skill snapshots that visualize improvement
+- **Shareable recruiter report**: public, no-login link that looks impressive
 
-## Deployment
+# Er. Forge Monorepo
 
-| | Service | Root directory |
-|--|---------|---------------|
-| **Frontend** | [Vercel](https://vercel.com) | `frontend/` |
-| **Backend** | [Render](https://render.com) | `backend/` |
+Sprint 1 foundation:
 
----
+- `frontend/` - Next.js 14 (App Router, TypeScript, TailwindCSS)
+- `backend/` - Express + TypeScript with Google OAuth, JWT, and protected API routes
 
-<div align="center">
+## Local Setup
 
-*Built for engineers who want proof, not just practice.*
+1. Copy env files:
+   - `backend/.env.example` -> `backend/.env`
+   - `frontend/.env.example` -> `frontend/.env.local`
+2. Run Migration 001 in Supabase SQL editor:
+   - `backend/migrations/001_users.sql`
+3. Start apps:
+   - Backend: `npm run dev:backend`
+   - Frontend: `npm run dev:frontend`
+4. Open `http://localhost:3000/login`
 
-</div>
+## Sprint 1 Auth Flow
+
+1. Click **Continue with Google** on `/login`
+2. Google callback redirects back to frontend with JWT
+3. JWT is stored in localStorage
+4. Click **Check /auth/me** to verify current profile
+
+## Deployment Targets
+
+- Frontend deploy: Vercel (root `frontend/`)
+- Backend deploy: Render (root `backend/`, `render.yaml` included)
