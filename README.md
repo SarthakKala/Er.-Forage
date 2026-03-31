@@ -1,98 +1,189 @@
-# Er. Forge
+<div align="center">
 
-> Others help you solve problems. Er. Forge ensures you stop creating the same ones.
+<br />
 
-## What is Er. Forge?
-Er. Forge turns your coding submissions into a structured growth loop: it **analyzes** what went wrong, **scores** your underlying skills, and **assigns** targeted practice to close the exact gap. Then it tracks your progress over time and generates a **shareable growth report** you can use in interviews.
+# ⚡ Er. Forge
+
+### *Others help you solve problems. Er. Forge ensures you stop creating the same ones.*
+
+<br />
+
+You practice LeetCode. You get better at LeetCode.<br />
+**Er. Forge makes you better at engineering.**
+
+<br />
+
+[![Next.js](https://img.shields.io/badge/Next.js_14-000000?style=flat&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![Express](https://img.shields.io/badge/Express-404D59?style=flat&logo=express&logoColor=white)](https://expressjs.com/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=flat&logo=supabase&logoColor=white)](https://supabase.com/)
+[![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+
+</div>
+
+---
+
+## The Problem
+
+Most developers practice coding problems in isolation — grind, check the solution, move on. There's no system that tells you *why* you keep failing the same class of problem, *which* underlying skill is actually weak, or *what* to practice next.
+
+Er. Forge is that system.
+
+---
+
+## How It Works
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                                                                 │
+│   1. SYNC          2. ANALYZE          3. SCORE                 │
+│                                                                 │
+│   Connect your  →  AI reads every  →  Maps each solve to       │
+│   LeetCode         submission and      a 12-concept skill       │
+│   account          finds the real      taxonomy and updates     │
+│                    root cause,         your profile score       │
+│                    not just the fix                             │
+│                                                                 │
+│   4. ASSIGN        5. VERIFY           6. REPORT                │
+│                                                                 │
+│   Get targeted  →  Solve them. We  →  Share a public           │
+│   LeetCode         auto-detect         growth report           │
+│   problems for     completions and     that shows real         │
+│   your weakest     track progress      skill progress to       │
+│   gaps             over time           recruiters              │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## What You Get
+
+**As a user:**
+
+| Feature | What it actually does |
+|---------|----------------------|
+| **Skill Profile** | A live radar of your strengths across 12 concepts (Arrays, DP, Graphs, Trees, and more) — updated every time you sync |
+| **AI Submission Analysis** | For every wrong answer or TLE, the AI explains the missing mental model, not just the corrected code |
+| **Targeted Assignments** | Weekly LeetCode problems chosen specifically for your weakest concept — with real problem links |
+| **Auto-Completion** | Sync again after solving an assignment and it's marked done automatically |
+| **Growth Timeline** | A chart of your skill scores over time so you can see if you're actually improving |
+| **Recruiter Report** | A shareable public link — no login required — that shows your growth story with data |
+
+---
+
+## The Growth Loop
+
+```
+        ┌──────────────────────────────────────┐
+        │                                      │
+        ▼                                      │
+  [ Submit on LeetCode ]                       │
+        │                                      │
+        ▼                                      │
+  [ Er. Forge syncs it ]                       │
+        │                                      │
+        ▼                                      │
+  [ AI analyzes root cause ]                   │
+        │                                      │
+        ▼                                      │
+  [ Skill score updated ]                      │
+        │                                      │
+        ▼                                      │
+  [ Assignment generated for weakest gap ] ────┘
+        │
+        ▼
+  [ Share growth report with recruiter ]
+```
+
+This loop runs every time you sync — the more you solve, the sharper your profile gets.
+
+---
 
 ## Tech Stack
 
-| Layer | Tech |
-| --- | --- |
-| Frontend | Next.js 14 (App Router), TypeScript, Tailwind, Axios, Chart.js, GSAP |
-| Backend | Node.js, Express, TypeScript |
-| Database | Postgres (Supabase) |
-| AI | OpenRouter (Gemini / other models) |
-| Auth | Google OAuth (Passport) + JWT |
+| Layer | Technologies |
+|-------|-------------|
+| **Frontend** | Next.js 14 (App Router), TypeScript, Tailwind CSS, Chart.js, GSAP |
+| **Backend** | Node.js, Express, TypeScript |
+| **Database** | PostgreSQL via Supabase |
+| **AI** | OpenRouter (Gemini / other models) |
+| **Auth** | Google OAuth (Passport.js) + JWT |
 
-## Local Development
+---
+
+## Quick Start
 
 ### Prerequisites
 - Node.js 18+
-- A Supabase account
-- A Google Cloud OAuth app
-- An OpenRouter API key
+- A [Supabase](https://supabase.com) project
+- A [Google Cloud](https://console.cloud.google.com) OAuth 2.0 app
+- An [OpenRouter](https://openrouter.ai) API key
 
-### Setup
-1. Clone the repo
-
-2. Install dependencies
+### 1. Install
 
 ```bash
-cd backend
-npm install
+git clone <your-repo-url> && cd er_forage
 
-cd ../frontend
-npm install
+cd backend && npm install
+cd ../frontend && npm install
 ```
 
-3. Set up environment variables
-- Backend: copy `backend/.env.example` → `backend/.env` and fill in real values
-- Frontend: copy `frontend/.env.example` → `frontend/.env.local`
+### 2. Configure
 
-4. Run database migrations
-- Open Supabase → SQL Editor
-- Run the migrations below **in order**.
+```bash
+cp backend/.env.example backend/.env       # fill in your values
+cp frontend/.env.example frontend/.env.local
+```
 
-5. Start development servers
+### 3. Run migrations
+
+Open Supabase → SQL Editor and run `backend/migrations/001_users.sql` through `007_platform_connections.sql` in order.
+
+### 4. Start
 
 ```bash
 # Terminal 1
-cd backend
-npm run dev
+cd backend && npm run dev      # → http://localhost:4000
 
 # Terminal 2
-cd frontend
-npm run dev
+cd frontend && npm run dev     # → http://localhost:3000
 ```
 
-Frontend runs on `http://localhost:3000` and backend on `http://localhost:4000`.
+Visit `http://localhost:3000`, sign in with Google, connect your LeetCode account, and sync.
 
-### Seeding the demo account (Pitch Prep)
-
-```bash
-npx ts-node backend/scripts/seedDemo.ts
-```
-
-This creates a demo user (`demo@erforge.io`) with realistic seeded data and prints a ready-to-share public report URL.
+---
 
 ## Environment Variables
 
-### Backend (`backend/.env`)
+### Backend — `backend/.env`
 
 | Variable | Required | Description |
-| --- | --- | --- |
+|----------|----------|-------------|
 | `DATABASE_URL` | yes | Postgres connection string (Supabase) |
 | `SUPABASE_URL` | yes | Supabase project URL |
-| `SUPABASE_KEY` | yes | Supabase anon/service key used by server |
-| `GOOGLE_CLIENT_ID` | yes | Google OAuth client id |
+| `SUPABASE_KEY` | yes | Supabase anon/service key |
+| `GOOGLE_CLIENT_ID` | yes | Google OAuth client ID |
 | `GOOGLE_CLIENT_SECRET` | yes | Google OAuth client secret |
-| `JWT_SECRET` | yes | JWT signing secret (7d expiry) |
+| `JWT_SECRET` | yes | JWT signing secret (min 32 chars) |
 | `OPENROUTER_API_KEY` | yes | OpenRouter API key |
-| `FRONTEND_URL` | yes | Frontend origin for OAuth redirect + CORS |
-| `PORT` | yes | Backend port (default 4000) |
+| `FRONTEND_URL` | yes | Frontend origin for OAuth redirect and CORS |
+| `PORT` | no | Backend port (default: `4000`) |
 
-### Frontend (`frontend/.env.local`)
+### Frontend — `frontend/.env.local`
 
 | Variable | Required | Description |
-| --- | --- | --- |
-| `NEXT_PUBLIC_API_URL` | yes | Backend API base (default `http://localhost:4000/api/v1`) |
+|----------|----------|-------------|
+| `NEXT_PUBLIC_API_URL` | no | Backend API base URL (default: `http://localhost:4000/api/v1`) |
+
+---
 
 ## Database Migrations
 
-Run these **in order** (Supabase SQL Editor). These migrations match the backend models and routes.
+Run in order in Supabase SQL Editor.
 
-### 001_users.sql
+<details>
+<summary><strong>001_users.sql</strong></summary>
 
 ```sql
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
@@ -105,8 +196,10 @@ CREATE TABLE IF NOT EXISTS users (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 ```
+</details>
 
-### 002_submissions.sql
+<details>
+<summary><strong>002_submissions.sql</strong></summary>
 
 ```sql
 CREATE TABLE IF NOT EXISTS submissions (
@@ -130,8 +223,10 @@ CREATE TABLE IF NOT EXISTS submissions (
 CREATE INDEX IF NOT EXISTS submissions_user_time_idx
   ON submissions (user_id, submitted_at DESC);
 ```
+</details>
 
-### 003_skill_scores.sql
+<details>
+<summary><strong>003_skill_scores.sql</strong></summary>
 
 ```sql
 CREATE TABLE IF NOT EXISTS skill_scores (
@@ -142,8 +237,10 @@ CREATE TABLE IF NOT EXISTS skill_scores (
   PRIMARY KEY (user_id, concept)
 );
 ```
+</details>
 
-### 004_skill_score_history.sql
+<details>
+<summary><strong>004_skill_score_history.sql</strong></summary>
 
 ```sql
 CREATE TABLE IF NOT EXISTS skill_score_history (
@@ -157,8 +254,10 @@ CREATE TABLE IF NOT EXISTS skill_score_history (
 CREATE INDEX IF NOT EXISTS skill_score_history_user_time_idx
   ON skill_score_history (user_id, recorded_at ASC);
 ```
+</details>
 
-### 005_assignments.sql
+<details>
+<summary><strong>005_assignments.sql</strong></summary>
 
 ```sql
 CREATE TABLE IF NOT EXISTS assignments (
@@ -176,8 +275,10 @@ CREATE TABLE IF NOT EXISTS assignments (
 CREATE INDEX IF NOT EXISTS assignments_user_status_idx
   ON assignments (user_id, status, assigned_at ASC);
 ```
+</details>
 
-### 006_growth_reports.sql
+<details>
+<summary><strong>006_growth_reports.sql</strong></summary>
 
 ```sql
 CREATE TABLE IF NOT EXISTS growth_reports (
@@ -193,8 +294,10 @@ CREATE TABLE IF NOT EXISTS growth_reports (
 CREATE INDEX IF NOT EXISTS growth_reports_user_time_idx
   ON growth_reports (user_id, created_at DESC);
 ```
+</details>
 
-### 007_platform_connections.sql
+<details>
+<summary><strong>007_platform_connections.sql</strong></summary>
 
 ```sql
 CREATE TABLE IF NOT EXISTS platform_connections (
@@ -210,65 +313,50 @@ CREATE TABLE IF NOT EXISTS platform_connections (
 CREATE INDEX IF NOT EXISTS platform_connections_user_idx
   ON platform_connections (user_id, connected_at DESC);
 ```
+</details>
+
+---
 
 ## Project Structure
 
-```text
+```
 er_forage/
-  backend/
-    src/
-      config/        # env loading
-      jobs/          # cron jobs
-      lib/           # helpers (db, leetcode utils, etc.)
-      middleware/    # auth, error handling, rate limiting
-      models/        # db queries
-      routes/        # /api/v1 endpoints
-      services/      # orchestration (analysis, assignments, portfolio snapshots)
-    migrations/      # SQL migrations
-    scripts/         # one-off scripts (demo seed)
-  frontend/
-    app/             # Next.js App Router pages
-    components/      # UI / layout / charts
-    lib/             # axios + types + utils
-    public/          # static assets (favicon)
+├── backend/
+│   ├── src/
+│   │   ├── adapters/       # Platform sync (LeetCode)
+│   │   ├── ai/             # Prompt builder + response parser
+│   │   ├── config/         # Environment + Passport setup
+│   │   ├── jobs/           # Cron jobs (weekly skill snapshots)
+│   │   ├── lib/            # DB, OpenRouter, Supabase, encryption
+│   │   ├── middleware/      # Auth + error handling
+│   │   ├── models/         # Database queries
+│   │   ├── routes/         # /api/v1 endpoints
+│   │   └── services/       # Orchestration (analysis, assignments, portfolio)
+│   ├── migrations/         # SQL migration files
+│   └── scripts/            # Demo seed script
+└── frontend/
+    ├── app/
+    │   ├── (dashboard)/    # Skill profile, submissions, assignments, portfolio
+    │   ├── login/          # Google OAuth entry point
+    │   ├── onboarding/     # LeetCode connection setup
+    │   └── report/[token]/ # Public shareable growth report
+    ├── components/         # Charts, layout shell, UI primitives
+    └── lib/                # Axios client, types, utilities
 ```
 
-## Features
-- **Closed-loop growth**: observe → diagnose → prescribe → verify (not just “answers”)
-- **AI submission analysis**: root cause + missing mental model, not just a patch
-- **Skill taxonomy scoring**: consistent 12-concept profile with clear strengths/gaps
-- **Instructor loop assignments**: weekly targeted LeetCode problems (real links)
-- **Auto-completion detection**: accepted submissions complete assignments automatically
-- **Growth timeline**: weekly skill snapshots that visualize improvement
-- **Shareable recruiter report**: public, no-login link that looks impressive
+---
 
-# Er. Forge Monorepo
+## Deployment
 
-Sprint 1 foundation:
+| | Service | Root directory |
+|--|---------|---------------|
+| **Frontend** | [Vercel](https://vercel.com) | `frontend/` |
+| **Backend** | [Render](https://render.com) | `backend/` |
 
-- `frontend/` - Next.js 14 (App Router, TypeScript, TailwindCSS)
-- `backend/` - Express + TypeScript with Google OAuth, JWT, and protected API routes
+---
 
-## Local Setup
+<div align="center">
 
-1. Copy env files:
-   - `backend/.env.example` -> `backend/.env`
-   - `frontend/.env.example` -> `frontend/.env.local`
-2. Run Migration 001 in Supabase SQL editor:
-   - `backend/migrations/001_users.sql`
-3. Start apps:
-   - Backend: `npm run dev:backend`
-   - Frontend: `npm run dev:frontend`
-4. Open `http://localhost:3000/login`
+*Built for engineers who want proof, not just practice.*
 
-## Sprint 1 Auth Flow
-
-1. Click **Continue with Google** on `/login`
-2. Google callback redirects back to frontend with JWT
-3. JWT is stored in localStorage
-4. Click **Check /auth/me** to verify current profile
-
-## Deployment Targets
-
-- Frontend deploy: Vercel (root `frontend/`)
-- Backend deploy: Render (root `backend/`, `render.yaml` included)
+</div>
