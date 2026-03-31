@@ -26,25 +26,22 @@ Er. Forge is that system.
 ## How It Works
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                                                                 │
-│   1. SYNC          2. ANALYZE          3. SCORE                 │
-│                                                                 │
-│   Connect your  →  AI reads every  →  Maps each solve to       │
-│   LeetCode         submission and      a 12-concept skill       │
-│   account          finds the real      taxonomy and updates     │
-│                    root cause,         your profile score       │
-│                    not just the fix                             │
-│                                                                 │
-│   4. ASSIGN        5. VERIFY           6. REPORT                │
-│                                                                 │
-│   Get targeted  →  Solve them. We  →  Share a public           │
-│   LeetCode         auto-detect         growth report           │
-│   problems for     completions and     that shows real         │
-│   your weakest     track progress      skill progress to       │
-│   gaps             over time           recruiters              │
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
+  1. SYNC        Connect your LeetCode account — Er. Forge pulls your submissions
+       │
+       ▼
+  2. ANALYZE     AI reads every submission and finds the real root cause, not just the fix
+       │
+       ▼
+  3. SCORE       Each solve is mapped to a 12-concept skill taxonomy and your profile updates
+       │
+       ▼
+  4. ASSIGN      You get targeted LeetCode problems chosen specifically for your weakest gaps
+       │
+       ▼
+  5. VERIFY      Solve them, sync again — completions are detected automatically
+       │
+       ▼
+  6. REPORT      Share a public growth report that shows real skill progress to recruiters
 ```
 
 ---
@@ -61,34 +58,6 @@ Er. Forge is that system.
 | **Auto-Completion** | Sync again after solving an assignment and it's marked done automatically |
 | **Growth Timeline** | A chart of your skill scores over time so you can see if you're actually improving |
 | **Recruiter Report** | A shareable public link — no login required — that shows your growth story with data |
-
----
-
-## The Growth Loop
-
-```
-        ┌──────────────────────────────────────┐
-        │                                      │
-        ▼                                      │
-  [ Submit on LeetCode ]                       │
-        │                                      │
-        ▼                                      │
-  [ Er. Forge syncs it ]                       │
-        │                                      │
-        ▼                                      │
-  [ AI analyzes root cause ]                   │
-        │                                      │
-        ▼                                      │
-  [ Skill score updated ]                      │
-        │                                      │
-        ▼                                      │
-  [ Assignment generated for weakest gap ] ────┘
-        │
-        ▼
-  [ Share growth report with recruiter ]
-```
-
-This loop runs every time you sync — the more you solve, the sharper your profile gets.
 
 ---
 
@@ -340,4 +309,7 @@ er_forage/
 
 ## Deployment
 
-
+| Target | Service | Root directory |
+|--------|---------|----------------|
+| **Frontend** | [Vercel](https://vercel.com) | `frontend/` |
+| **Backend** | [Render](https://render.com) | `backend/` |
