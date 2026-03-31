@@ -2,11 +2,7 @@
 
 <br />
 
-<<<<<<< HEAD
-# ⚡ Er. Forge
-=======
 #  Er. Forge
->>>>>>> 8d48cf5fa71efb48b3322e388deac497d3a0a86d
 
 ### *Others help you solve problems. Er. Forge ensures you stop creating the same ones.*
 
@@ -14,17 +10,6 @@
 
 You practice LeetCode. You get better at LeetCode.<br />
 **Er. Forge makes you better at engineering.**
-
-<<<<<<< HEAD
-<br />
-
-[![Next.js](https://img.shields.io/badge/Next.js_14-000000?style=flat&logo=next.js&logoColor=white)](https://nextjs.org/)
-[![Express](https://img.shields.io/badge/Express-404D59?style=flat&logo=express&logoColor=white)](https://expressjs.com/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=flat&logo=supabase&logoColor=white)](https://supabase.com/)
-[![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-=======
->>>>>>> 8d48cf5fa71efb48b3322e388deac497d3a0a86d
 
 </div>
 
@@ -355,18 +340,4 @@ er_forage/
 
 ## Deployment
 
-Sprint 1 foundation:
 
----
-
-## Sprint 1 Auth Flow
-
-1. Click **Continue with Google** on `/login`
-2. Google callback redirects back to frontend with JWT
-3. JWT is stored in localStorage
-4. Click **Check /auth/me** to verify current profile
-
-## Deployment Targets
-
-- Frontend deploy: Vercel (root `frontend/`)
-- Backend deploy: Render (root `backend/`, `render.yaml` included)
