@@ -1,315 +1,96 @@
-<div align="center">
+# Er. Forge
 
-<br />
+*"Others help you solve problems. Er. Forge ensures you stop creating the same ones."*
 
-#  Er. Forge
+Er. Forge is an AI-powered engineering intelligence system. It connects to your LeetCode account, pulls your submissions, and uses AI to analyze each one — not just whether you got it right, but *why* you got it wrong. It scores you across 12 engineering concepts, finds your weakest areas, assigns you targeted problems to fix them, and generates a shareable growth portfolio that shows recruiters real skill progress, not just a problem count.
 
-### *Others help you solve problems. Er. Forge ensures you stop creating the same ones.*
 
-<br />
 
-You practice LeetCode. You get better at LeetCode.<br />
-**Er. Forge makes you better at engineering.**
+## 🛠️ Technologies
 
-</div>
+- Next.js 14 (App Router)
+- TypeScript
+- Node.js + Express
+- PostgreSQL via Supabase
+- Google OAuth + JWT (Passport.js)
+- OpenRouter API (Llama / Gemini models)
+- Tailwind CSS
+- Chart.js
+- GSAP
 
----
 
-## The Problem
 
-Most developers practice coding problems in isolation — grind, check the solution, move on. There's no system that tells you *why* you keep failing the same class of problem, *which* underlying skill is actually weak, or *what* to practice next.
+## ✨ Features
 
-Er. Forge is that system.
+- Connects to your LeetCode account via session token — pulls your full submission history automatically
+- AI analyzes every submission and identifies the actual root cause: missing mental model, wrong data structure choice, flawed approach — not just the fix
+- Scores you across 12 concepts (Arrays, DP, Graphs, Trees, Sliding Window, Backtracking, and more) and updates your skill profile with every sync
+- Assigns you specific LeetCode problems targeted at your weakest concept each week, with direct problem links
+- Auto-detects when you've completed an assigned problem the next time you sync — no manual marking
+- Growth timeline chart shows how each concept score has changed over time
+- Public shareable report link — no login required — for sharing with recruiters as proof of real skill growth
+- Manual paste fallback for users who can't connect their session cookie
 
----
 
-## How It Works
 
-```
-  1. SYNC        Connect your LeetCode account — Er. Forge pulls your submissions
-       │
-       ▼
-  2. ANALYZE     AI reads every submission and finds the real root cause, not just the fix
-       │
-       ▼
-  3. SCORE       Each solve is mapped to a 12-concept skill taxonomy and your profile updates
-       │
-       ▼
-  4. ASSIGN      You get targeted LeetCode problems chosen specifically for your weakest gaps
-       │
-       ▼
-  5. VERIFY      Solve them, sync again — completions are detected automatically
-       │
-       ▼
-  6. REPORT      Share a public growth report that shows real skill progress to recruiters
-```
+## 🧠 The Problem Every Other Tool Pretends Doesn't Exist
 
----
+Every grind tool out there tells you what to solve next. None of them tell you *why you keep failing the same type of problem*. Er. Forge is the first system I've built that closes that loop — you submit, it diagnoses, it assigns, you practice, it tracks. The growth report you can share at the end of it is backed by actual data, not a solved-count badge.
 
-## What You Get
 
-**As a user:**
 
-| Feature | What it actually does |
-|---------|----------------------|
-| **Skill Profile** | A live radar of your strengths across 12 concepts (Arrays, DP, Graphs, Trees, and more) — updated every time you sync |
-| **AI Submission Analysis** | For every wrong answer or TLE, the AI explains the missing mental model, not just the corrected code |
-| **Targeted Assignments** | Weekly LeetCode problems chosen specifically for your weakest concept — with real problem links |
-| **Auto-Completion** | Sync again after solving an assignment and it's marked done automatically |
-| **Growth Timeline** | A chart of your skill scores over time so you can see if you're actually improving |
-| **Recruiter Report** | A shareable public link — no login required — that shows your growth story with data |
+## 🔧 Process
 
----
+The idea started from a real frustration: I was solving LeetCode problems for weeks and still fumbling the same class of problem in interviews. There was no system. Just random grinding. So I designed one from scratch — vision doc, requirements, system design, database schema, the whole thing — before writing a single line of code.
 
-## Tech Stack
+The backend was the hardest part architecturally. I had to figure out how to talk to LeetCode without an official API. The solution was using LeetCode's own GraphQL endpoint with a session cookie and CSRF token, which the user provides. From there, the backend pulls submission history, sends each one through an AI prompt that asks for a structured skill diagnosis, and updates the user's concept scores accordingly.
 
-| Layer | Technologies |
-|-------|-------------|
-| **Frontend** | Next.js 14 (App Router), TypeScript, Tailwind CSS, Chart.js, GSAP |
-| **Backend** | Node.js, Express, TypeScript |
-| **Database** | PostgreSQL via Supabase |
-| **AI** | OpenRouter (Gemini / other models) |
-| **Auth** | Google OAuth (Passport.js) + JWT |
+The AI analysis pipeline was its own challenge. The prompt had to be specific enough that the model returned consistent, structured output — skill tags, root cause, severity — every time. Getting that right took a lot of iteration. I ended up using OpenRouter to keep costs at zero during development.
 
----
+The public report page is server-rendered and works without authentication so anyone can view it with just a link.
 
-## Quick Start
 
-### Prerequisites
-- Node.js 18+
-- A [Supabase](https://supabase.com) project
-- A [Google Cloud](https://console.cloud.google.com) OAuth 2.0 app
-- An [OpenRouter](https://openrouter.ai) API key
 
-### 1. Install
+## 📚 What I Learned
 
+- **LeetCode GraphQL integration** — how to reverse-engineer an unofficial API and authenticate with session cookies in a backend service
+- **Prompt engineering for structured output** — how to write prompts that consistently return parseable, structured AI responses across hundreds of submissions
+- **Next.js App Router** — the difference between server and client components, how SSR works in Next.js 14, and how to structure a real multi-page app with it
+- **PostgreSQL schema design** — designing 7 related tables with proper indexing, foreign keys, and migration files
+- **Google OAuth + JWT flow** — implementing a full auth system with Passport.js, token refresh, and protected route middleware
+- **Building a real product from scratch** — going from a problem statement all the way to a deployed, working system with real architecture decisions at every step
+
+
+
+## 🌱 Overall Growth
+
+Er. Forge is the most complete system I've built solo. It's not just a feature or a demo — it has a real backend, a real database, real auth, real AI integration, and a real user flow. Building it taught me that the hardest part of any system isn't the code, it's making a hundred small decisions correctly and in the right order.
+
+
+
+## 🚀 Running the Project
 ```bash
-git clone <your-repo-url> && cd er_forage
+git clone https://github.com/SarthakKala/Er.-Forage.git
+cd Er.-Forage
 
 cd backend && npm install
+# Fill in backend/.env: DATABASE_URL, SUPABASE_URL, SUPABASE_KEY,
+# GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, JWT_SECRET,
+# OPENROUTER_API_KEY, FRONTEND_URL
+# Run DB migrations in Supabase SQL Editor (001 through 007)
+npm run dev  # http://localhost:4000
+
 cd ../frontend && npm install
+# Create frontend/.env.local:
+# NEXT_PUBLIC_API_URL=http://localhost:4000/api/v1
+npm run dev  # http://localhost:3000
 ```
 
-### 2. Configure
 
-```bash
-cp backend/.env.example backend/.env       # fill in your values
-cp frontend/.env.example frontend/.env.local
-```
-
-### 3. Run migrations
-
-Open Supabase → SQL Editor and run `backend/migrations/001_users.sql` through `007_platform_connections.sql` in order.
-
-### 4. Start
-
-```bash
-# Terminal 1
-cd backend && npm run dev      # → http://localhost:4000
-
-# Terminal 2
-cd frontend && npm run dev     # → http://localhost:3000
-```
-
-Visit `http://localhost:3000`, sign in with Google, connect your LeetCode account, and sync.
-
+<!--
 ---
 
-## Environment Variables
+## 🎥 Video
+-->
 
-### Backend — `backend/.env`
-
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `DATABASE_URL` | yes | Postgres connection string (Supabase) |
-| `SUPABASE_URL` | yes | Supabase project URL |
-| `SUPABASE_KEY` | yes | Supabase anon/service key |
-| `GOOGLE_CLIENT_ID` | yes | Google OAuth client ID |
-| `GOOGLE_CLIENT_SECRET` | yes | Google OAuth client secret |
-| `JWT_SECRET` | yes | JWT signing secret (min 32 chars) |
-| `OPENROUTER_API_KEY` | yes | OpenRouter API key |
-| `FRONTEND_URL` | yes | Frontend origin for OAuth redirect and CORS |
-| `PORT` | no | Backend port (default: `4000`) |
-
-### Frontend — `frontend/.env.local`
-
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `NEXT_PUBLIC_API_URL` | no | Backend API base URL (default: `http://localhost:4000/api/v1`) |
-
----
-
-## Database Migrations
-
-Run in order in Supabase SQL Editor.
-
-<details>
-<summary><strong>001_users.sql</strong></summary>
-
-```sql
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
-
-CREATE TABLE IF NOT EXISTS users (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  email TEXT UNIQUE NOT NULL,
-  name TEXT NOT NULL,
-  avatar_url TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-```
-</details>
-
-<details>
-<summary><strong>002_submissions.sql</strong></summary>
-
-```sql
-CREATE TABLE IF NOT EXISTS submissions (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  platform TEXT NOT NULL,
-  problem_id TEXT NOT NULL,
-  problem_title TEXT NOT NULL,
-  problem_tags TEXT[] NOT NULL DEFAULT '{}'::text[],
-  difficulty TEXT NOT NULL CHECK (difficulty IN ('easy', 'medium', 'hard')),
-  submitted_code TEXT,
-  result TEXT NOT NULL CHECK (result IN ('accepted', 'wrong', 'tle', 'error')),
-  error_message TEXT,
-  ai_analysis TEXT,
-  concept_tags TEXT[] NOT NULL DEFAULT '{}'::text[],
-  is_manual_paste BOOLEAN NOT NULL DEFAULT FALSE,
-  submitted_at TIMESTAMPTZ NOT NULL,
-  UNIQUE (user_id, platform, problem_id, submitted_at)
-);
-
-CREATE INDEX IF NOT EXISTS submissions_user_time_idx
-  ON submissions (user_id, submitted_at DESC);
-```
-</details>
-
-<details>
-<summary><strong>003_skill_scores.sql</strong></summary>
-
-```sql
-CREATE TABLE IF NOT EXISTS skill_scores (
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  concept TEXT NOT NULL,
-  score INT NOT NULL CHECK (score >= 0 AND score <= 100),
-  last_updated TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  PRIMARY KEY (user_id, concept)
-);
-```
-</details>
-
-<details>
-<summary><strong>004_skill_score_history.sql</strong></summary>
-
-```sql
-CREATE TABLE IF NOT EXISTS skill_score_history (
-  id BIGSERIAL PRIMARY KEY,
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  concept TEXT NOT NULL,
-  score INT NOT NULL CHECK (score >= 0 AND score <= 100),
-  recorded_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
-CREATE INDEX IF NOT EXISTS skill_score_history_user_time_idx
-  ON skill_score_history (user_id, recorded_at ASC);
-```
-</details>
-
-<details>
-<summary><strong>005_assignments.sql</strong></summary>
-
-```sql
-CREATE TABLE IF NOT EXISTS assignments (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  problem_id TEXT NOT NULL,
-  problem_title TEXT NOT NULL,
-  platform_url TEXT NOT NULL,
-  concept_target TEXT NOT NULL,
-  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'completed')),
-  assigned_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  completed_at TIMESTAMPTZ
-);
-
-CREATE INDEX IF NOT EXISTS assignments_user_status_idx
-  ON assignments (user_id, status, assigned_at ASC);
-```
-</details>
-
-<details>
-<summary><strong>006_growth_reports.sql</strong></summary>
-
-```sql
-CREATE TABLE IF NOT EXISTS growth_reports (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  token UUID NOT NULL DEFAULT gen_random_uuid(),
-  snapshot_data JSONB NOT NULL DEFAULT '{}'::jsonb,
-  period TEXT,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  UNIQUE (token)
-);
-
-CREATE INDEX IF NOT EXISTS growth_reports_user_time_idx
-  ON growth_reports (user_id, created_at DESC);
-```
-</details>
-
-<details>
-<summary><strong>007_platform_connections.sql</strong></summary>
-
-```sql
-CREATE TABLE IF NOT EXISTS platform_connections (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  platform TEXT NOT NULL,
-  leetcode_session TEXT,
-  csrf_token TEXT,
-  connected_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  UNIQUE (user_id, platform)
-);
-
-CREATE INDEX IF NOT EXISTS platform_connections_user_idx
-  ON platform_connections (user_id, connected_at DESC);
-```
-</details>
-
----
-
-## Project Structure
-
-```
-er_forage/
-├── backend/
-│   ├── src/
-│   │   ├── adapters/       # Platform sync (LeetCode)
-│   │   ├── ai/             # Prompt builder + response parser
-│   │   ├── config/         # Environment + Passport setup
-│   │   ├── jobs/           # Cron jobs (weekly skill snapshots)
-│   │   ├── lib/            # DB, OpenRouter, Supabase, encryption
-│   │   ├── middleware/      # Auth + error handling
-│   │   ├── models/         # Database queries
-│   │   ├── routes/         # /api/v1 endpoints
-│   │   └── services/       # Orchestration (analysis, assignments, portfolio)
-│   ├── migrations/         # SQL migration files
-│   └── scripts/            # Demo seed script
-└── frontend/
-    ├── app/
-    │   ├── (dashboard)/    # Skill profile, submissions, assignments, portfolio
-    │   ├── login/          # Google OAuth entry point
-    │   ├── onboarding/     # LeetCode connection setup
-    │   └── report/[token]/ # Public shareable growth report
-    ├── components/         # Charts, layout shell, UI primitives
-    └── lib/                # Axios client, types, utilities
-```
-
----
-
-## Deployment
-
-| Target | Service | Root directory |
-|--------|---------|----------------|
-| **Frontend** | [Vercel](https://vercel.com) | `frontend/` |
-| **Backend** | [Render](https://render.com) | `backend/` |
+<!-- Attach your demo video here -->
